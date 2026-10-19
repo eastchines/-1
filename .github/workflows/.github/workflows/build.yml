@@ -1,0 +1,41 @@
+name: 打包-容器版exe(外部main.py可修改)
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: 检出仓库全部文件
+        uses: actions/checkout@v4
+
+      - name: 设置Python3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖包
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow pynput pyinstaller
+
+      - name: 打包boot.py 输出main.exe（不带-F，目录模式）
+        run: >
+          pyinstaller boot.py
+          --name main
+          -w
+          --add-data "skin;skin"
+          --hidden-import=PIL
+          --hidden-import=pynput
+
+      # 关键步骤：把main.py复制进dist文件夹，和main.exe放在一起
+      - name: 将main.py复制到dist目录
+        run: copy main.py dist\
+
+      # 上传整个dist文件夹作为制品，下载后直接使用
+      - name: 打包上传dist整套文件
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyboardPet_dist完整包
+          path: dist
