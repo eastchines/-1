@@ -1,4 +1,4 @@
-name: 构建 EXE
+名称：构建 EXE: 构建 EXE
 on:
   push:
     branches: [ main ]
@@ -8,6 +8,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      # 增加一步：打印当前目录文件，流水线日志里可以看有没有拉到skin图片（方便调试）
+      - name: 查看检出的文件
+        run: |
+          ls
+          ls skin
       - name: 安装 Python
         uses: actions/setup-python@v5
         with:
@@ -17,7 +22,7 @@ jobs:
           pip install pyinstaller pillow pynput
       - name: 构建 exe
         run: |
-          pyinstaller -w main.py --add-data "skin;skin" --hidden-import=PIL.Image --hidden-import=PIL.ImageTk
+          pyinstaller -w main.py --add-data skin:skin --hidden-import=PIL.Image --hidden-import=PIL.ImageTk
       - name: 上传工件
         uses: actions/upload-artifact@v4
         with:
