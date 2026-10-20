@@ -1,4 +1,4 @@
-name: 打包-容器版exe(外部main.py可修改)
+名称：打包-容器版exe(外部main.py可修改): 打包-容器版exe(外部main.py可修改)
 on:
   push:
   workflow_dispatch:
@@ -27,11 +27,17 @@ jobs:
           -w
           --hidden-import=tkinter
           --hidden-import=PIL
+          --hidden-import=PIL.Image
+          --hidden-import=PIL.ImageTk
           --hidden-import=pynput
 
-      # 关键步骤：把main.py复制进dist文件夹，和main.exe放在一起
+      # 复制main.py到dist
       - name: 将main.py复制到dist目录
         run: copy main.py dist\
+
+      # ==========新增：复制整个skin文件夹到dist==========
+      - name: 复制skin素材文件夹到dist
+        run: xcopy skin dist\skin /E /I /Y
 
       # 上传整个dist文件夹作为制品，下载后直接使用
       - name: 打包上传dist整套文件
